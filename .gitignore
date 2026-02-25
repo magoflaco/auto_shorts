@@ -1,0 +1,17 @@
+# Secretos y credenciales
+.env
+token.json
+client_secrets.json
+
+# Datos generados
+historias/
+estado.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos temporales
+_uploader_wrapper_tmp.py
+*.tmp

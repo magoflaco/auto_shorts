@@ -1,0 +1,19 @@
+[Unit]
+Description=Auto Shorts — Generador automático de YouTube Shorts
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/auto_shorts
+ExecStart=/home/ubuntu/auto_shorts/venv/bin/python -u automatizador.py
+Restart=on-failure
+RestartSec=60
+StandardOutput=journal
+StandardError=journal
+
+# Variables de entorno se cargan desde .env via python-dotenv
+# No necesitan EnvironmentFile aquí
+
+[Install]
+WantedBy=multi-user.target
