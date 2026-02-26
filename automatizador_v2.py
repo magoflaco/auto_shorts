@@ -105,38 +105,59 @@ def discord_reporte_subida(carpeta: str, estado: dict, es_nuevo: bool = False):
 
     todas_ok = True
     alguna_ok = False
+    todas_pendientes = True
+    alguna_fallida = False
+    
     for p in PLATAFORMAS:
         info = plats.get(p, {})
         if info.get("subido"):
             emoji = "✅"
             valor = info.get("link") or "Subido"
             alguna_ok = True
+            todas_pendientes = False
         elif info.get("intentos", 0) >= MAX_INTENTOS:
             emoji = "❌"
             valor = f"FALLIDO ({info['intentos']} intentos)\n```{(info.get('ultimo_error') or 'Sin detalle')[:200]}```"
             todas_ok = False
+            todas_pendientes = False
+            alguna_fallida = True
         else:
             emoji = "⏳"
             valor = f"Pendiente (intento {info.get('intentos', 0)}/{MAX_INTENTOS})"
             if info.get("ultimo_error"):
                 valor += f"\n```{info['ultimo_error'][:200]}```"
             todas_ok = False
+            if info.get("intentos", 0) > 0:
+                todas_pendientes = False
 
         campos.append({"name": f"{emoji} {p.capitalize()}", "value": valor, "inline": True})
 
-    if todas_ok:
-        color = 0x2ECC71  # verde
-        titulo = f"✅ Video completo: {titulo_video}"
-    elif alguna_ok:
-        color = 0xF39C12  # naranja
-        titulo = f"⚠️ Video parcial: {titulo_video}"
-    else:
-        color = 0xE74C3C  # rojo
-        titulo = f"❌ Video fallido: {titulo_video}"
-
     desc = estado.get("historia_extracto", "")[:300]
+
     if es_nuevo:
         desc = "🆕 **Nuevo video generado**\n" + desc
+        if todas_pendientes:
+            color = 0x3498DB  # azul
+            titulo = f"🆕 Video en cola: {titulo_video}"
+        elif todas_ok:
+            color = 0x2ECC71  # verde
+            titulo = f"🆕✅ Video completo: {titulo_video}"
+        elif alguna_ok:
+            color = 0xF39C12  # naranja
+            titulo = f"🆕⚠️ Video parcial: {titulo_video}"
+        else:
+            color = 0xE74C3C  # rojo
+            titulo = f"🆕❌ Video fallido: {titulo_video}"
+    else:
+        if todas_ok:
+            color = 0x2ECC71  # verde
+            titulo = f"✅ Video completo: {titulo_video}"
+        elif alguna_ok:
+            color = 0xF39C12  # naranja
+            titulo = f"📈 Progreso: {titulo_video}"
+        else:
+            color = 0xE74C3C  # rojo
+            titulo = f"❌ Fallo en intento: {titulo_video}"
 
     discord_notify(titulo, desc, color, campos)
 

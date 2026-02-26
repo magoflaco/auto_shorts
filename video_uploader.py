@@ -160,6 +160,17 @@ def subir_instagram(archivo_video: str, titulo: str, descripcion: str) -> dict:
 # 4. TikTok
 # ══════════════════════════════════════════════════════════════════
 
+import concurrent.futures
+
+def _upload_tiktok_sync(archivo_video, descripcion, cookie_file):
+    from tiktok_uploader.upload import upload_video
+    return upload_video(
+        archivo_video,
+        description=descripcion,
+        cookies=cookie_file,
+        headless=False
+    )
+
 def subir_tiktok(archivo_video: str, titulo: str, descripcion: str) -> dict:
     """Sube a TikTok usando el archivo completo tiktok_cookies.txt."""
     print("\n[TikTok] Iniciando subida...")
@@ -175,12 +186,13 @@ def subir_tiktok(archivo_video: str, titulo: str, descripcion: str) -> dict:
     try:
         # Pasamos el archivo de cookies directamente. 
         # Separamos el título de la descripción con un salto de línea (\n)
-        failed = upload_video(
-            archivo_video,
-            description=f"{titulo}\n{descripcion}",
-            cookies=cookie_file,
-            headless=False # Mantenemos en False para que funcione con xvfb-run
-        )
+        desc_completa = f"{titulo}\n{descripcion}"
+        
+        # Ejecutamos en un thread separado para evitar el error:
+        # "using Playwright Sync API inside the asyncio loop"
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_upload_tiktok_sync, archivo_video, desc_completa, cookie_file)
+            failed = future.result()
 
         if failed:
             error_detail = f"upload_video retornó error: {failed}"
