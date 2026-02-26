@@ -17,6 +17,13 @@ import sys
 import subprocess
 import json
 import glob
+from pathlib import Path
+
+# Asegurar que el directorio del proyecto esté en sys.path
+# (este script se ejecuta con cwd=historias/<nombre>/ via subprocess)
+_PROJECT_ROOT = Path(__file__).resolve().parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 import config
 
@@ -241,7 +248,7 @@ def crear_video_desde_json(
         "-map", "[audio_final]",
         "-t", str(duracion_total_video),
         "-c:v", "libx264",
-        "-preset", "ultrafast" if DEBUG_MODE else "fast",
+        "-preset", "ultrafast" if DEBUG_MODE else "ultrafast",#"fast",
         "-crf", CRF_VALUE,
         "-c:a", "aac", "-b:a", "192k",
         "-r", str(FPS_FINAL),

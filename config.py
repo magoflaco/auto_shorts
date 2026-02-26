@@ -54,9 +54,9 @@ ANIME_SUFFIX = (
 )
 
 # ── Parámetros de video (FFmpeg) ──────────────────────────────────
-VIDEO_WIDTH      = 1080
-VIDEO_HEIGHT     = 1920
-VIDEO_FPS        = 30
+VIDEO_WIDTH      = 720#1080
+VIDEO_HEIGHT     = 1280#1920
+VIDEO_FPS        = 24#30
 VIDEO_CRF        = "23"
 VIDEO_DEBUG_MODE = False
 
@@ -64,3 +64,10 @@ VIDEO_DEBUG_MODE = False
 VOICE_MODEL = "aura-2-celeste-es"
 MODEL_SMALL = "llama-3.1-8b-instant"
 MODEL_BIG   = "llama-3.3-70b-versatile"
+
+# IG
+IG_USERNAME = os.getenv("IG_USERNAME", "")
+IG_PASSWORD = os.getenv("IG_PASSWORD", "")
+# Ruta para las cookies de sesión de TikTok
+TIKTOK_COOKIES = BASE_DIR / "tiktok_cookies.json"
+TIKTOK_SESSIONID = os.getenv("TIKTOK_SESSIONID", "")
